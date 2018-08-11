@@ -5,14 +5,14 @@
     "authors":
     {
         "name": "Yoshitake Hamano",
-        "email": "oed0cow6oy5@gmail.com",
+        "email": "oed0cow6oy5@gmail.com"
     },
     "repository":
     {
         "type": "git",
-        "url": "https://github.com/yoshitake-hamano/arduino_log.git",
+        "url": "https://github.com/yoshitake-hamano/arduino_log.git"
     },
     "version": "0.0.1",
     "frameworks": "arduino",
-    "platforms": "*",
+    "platforms": "*"
 }
