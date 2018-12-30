@@ -1,5 +1,5 @@
 {
-    "name": "Log library for Arduino",
+    "name": "log_library",
     "keywords": "log, memory",
     "description": "Log Library for Arduino",
     "authors":
