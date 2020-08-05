@@ -4,7 +4,8 @@
 
 #include "unit_test.hpp"
 
-#include "string.h"
+#include <string>
+#include <vector>
 #include "log/Log.h"
 #include "log/Log.cpp"
 
@@ -133,11 +134,11 @@ void test_set_level()
 
 void test_full_log()
 {
-    for (int i=0; i<Log::LOG_CAPACITY; i++) {
+    for (int i=0; i<Log::CapacityOfRecords(); i++) {
         Log::Fatal("abc"); UT_ASSERT_INT(i+1, Log::Size());
     }
-    for (int i=0; i<Log::LOG_CAPACITY; i++) {
-        Log::Fatal("abc"); UT_ASSERT_INT(Log::LOG_CAPACITY, Log::Size());
+    for (int i=0; i<Log::CapacityOfRecords(); i++) {
+        Log::Fatal("abc"); UT_ASSERT_INT(Log::CapacityOfRecords(), Log::Size());
     }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 yoshitake. All rights reserved.
+// Copyright 2020 yoshitake. All rights reserved.
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
@@ -6,28 +6,59 @@
 
 #ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <iostream>
 #endif
 
-static int log_size             = 0;
-static int log_next_write_index = 0;
-static int log_level            = Log::LOG_LEVEL_TRACE;
+static bool log_initialized             = false;
+static int  log_size                    = 0;
+static int  log_capacity_of_records     = 0;
+static int  log_capacity_of_each_record = 0;
+static int  log_next_write_index        = 0;
+static int  log_level                   = Log::LOG_LEVEL_TRACE;
 
-static std::string logs[Log::LOG_CAPACITY];
+static std::vector<std::string> logs;
 
 static void add(const std::string& message)
 {
+    if (!log_initialized) {
+        Log::SetCapacity(Log::LOG_DEFAULT_CAPACITY_OF_RECORDS,
+                         Log::LOG_DEFAULT_CAPACITY_OF_EACH_RECORD);
+    }
+
+    std::string m = message.substr(0, log_capacity_of_each_record - 1);
 #ifdef ARDUINO
     Serial.println(message.c_str());
+#else
+//    std::cout << "Log::add() add \"" << m << "\"" << std::endl;
 #endif
 
-    logs[log_next_write_index] = message;
+    logs[log_next_write_index] = m;
 
     ++log_next_write_index;
-    log_next_write_index = log_next_write_index % Log::LOG_CAPACITY;
+    log_next_write_index = log_next_write_index % log_capacity_of_records;
 
-    if (log_size < Log::LOG_CAPACITY) {
+    if (log_size < log_capacity_of_records) {
         ++log_size;
     }
+}
+
+void Log::SetCapacity(int capacityOfRecords, int capacityOfEachRecord)
+{
+    if (log_size != 0) {
+        assert(log_size == 0);
+        return;
+    }
+    logs.clear();
+    logs.reserve(capacityOfRecords);
+    log_capacity_of_records = capacityOfRecords;
+    log_capacity_of_each_record = capacityOfEachRecord;
+    for (int i=0; i<capacityOfRecords; i++) {
+        std::string s;
+        s.reserve(capacityOfEachRecord);
+        logs.push_back(s);
+    }
+    log_initialized = true;
 }
 
 void Log::SetLevel(int level)
@@ -40,6 +71,16 @@ int Log::Size()
     return log_size;
 }
 
+int Log::CapacityOfRecords()
+{
+    return log_capacity_of_records;
+}
+
+int Log::CapacityOfEachRecord()
+{
+    return log_capacity_of_each_record;
+}
+
 bool Log::GetLog(int index, std::string& log)
 {
     if (index < 0 || log_size <= index) {
@@ -47,15 +88,15 @@ bool Log::GetLog(int index, std::string& log)
     }
 
     if (log_next_write_index == log_size) {
-        // log_size  != LOG_CAPACITY
+        // log_size  != log_capacity_of_records
         // log_start == 0
         log = logs[index];
         return true;
     }
 
-    // log_size  == LOG_CAPACITY
+    // log_size  == log_capacity_of_records
     // log_start == log_next_write_index
-    int i = (log_next_write_index + index) % LOG_CAPACITY;
+    int i = (log_next_write_index + index) % log_capacity_of_records;
     log = logs[i];
     return true;
 }
@@ -112,4 +153,5 @@ void Log::Clean()
 {
     log_size = 0;
     log_next_write_index = 0;
+    log_initialized = false;
 }
