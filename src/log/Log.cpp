@@ -46,7 +46,10 @@ static void add(const std::string& message)
 void Log::SetCapacity(int capacityOfRecords, int capacityOfEachRecord)
 {
     if (log_size != 0) {
+#ifdef ARDUINO
+#else
         assert(log_size == 0);
+#endif
         return;
     }
     logs.clear();
