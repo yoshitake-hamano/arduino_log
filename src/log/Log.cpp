@@ -84,6 +84,31 @@ int Log::CapacityOfEachRecord()
     return log_capacity_of_each_record;
 }
 
+bool Log::GetAllLogs(void (*fn)(int index, std::string& log))
+{
+    int i = 0;
+    if (log_next_write_index == log_size) {
+        // log_size  != log_capacity_of_records
+        // log_start == 0
+        i = 0;
+    } else {
+        // log_size  == log_capacity_of_records
+        // log_start == log_next_write_index
+        i = log_next_write_index;
+    }
+
+    for (int index=0;; index++) {
+        fn(index, logs[i]);
+
+        i++;
+        i = i % log_capacity_of_records;
+        if (i == log_next_write_index) {
+            break;
+        }
+    }
+    return true;
+}
+
 bool Log::GetLog(int index, std::string& log)
 {
     if (index < 0 || log_size <= index) {

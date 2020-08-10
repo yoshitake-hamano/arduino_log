@@ -36,6 +36,7 @@ public:
     static int  CapacityOfRecords();
     static int  CapacityOfEachRecord();
     static bool GetLog(int index, std::string& log);
+    static bool GetAllLogs(void(*fn)(int index, std::string& log));
     static void Fatal(const char *message);
     static void Error(const char *message);
     static void Warn(const char *message);

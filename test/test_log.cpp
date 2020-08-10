@@ -140,6 +140,33 @@ void test_full_log()
     for (int i=0; i<Log::CapacityOfRecords(); i++) {
         Log::Fatal("abc"); UT_ASSERT_INT(Log::CapacityOfRecords(), Log::Size());
     }
+    Log::Clean();
+}
+
+void test_get_all_logs_fn(int index, std::string& log)
+{
+    static int expectedIndex = 0;
+    UT_ASSERT_INT(expectedIndex, index);
+    expectedIndex++;
+
+    switch(index) {
+    case 0:  UT_ASSERT_STRING("[INFO ] abc", log.c_str()); break;
+    case 1:  UT_ASSERT_STRING("[WARN ] abc", log.c_str()); break;
+    case 2:  UT_ASSERT_STRING("[ERROR] abc", log.c_str()); break;
+    case 3:  UT_ASSERT_STRING("[FATAL] abc", log.c_str()); break;
+    default: UT_ASSERT_TRUE(false); break;
+    }
+}
+
+void test_get_all_logs()
+{
+    Log::Info("abc");
+    Log::Warn("abc");
+    Log::Error("abc");
+    Log::Fatal("abc");
+    UT_ASSERT_INT(4, Log::Size());
+    Log::GetAllLogs(test_get_all_logs_fn);
+    Log::Clean();
 }
 
 int main(int argc, char **argv)
@@ -150,6 +177,7 @@ int main(int argc, char **argv)
     UT_RUN(test_error);
     UT_RUN(test_warn);
     UT_RUN(test_fatal);
+    UT_RUN(test_get_all_logs);
     UT_RUN(test_set_level);
     UT_RUN(test_full_log);
     return 0;
