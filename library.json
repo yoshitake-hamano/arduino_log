@@ -12,7 +12,7 @@
         "type": "git",
         "url": "https://github.com/yoshitake-hamano/arduino_log.git"
     },
-    "version": "0.0.1",
+    "version": "0.0.2",
     "frameworks": "arduino",
     "platforms": "*"
 }
